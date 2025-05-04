@@ -5,21 +5,21 @@ const router = express.Router();
 
 router.get("/fetch_all", async (req, res) => {
   try {
-    const { data, error } = await supabase.from("Patients").select("*"); // Added `await`
+    const { data, error } = await supabase.from("Patients").select("*");
     if (error) {
-      console.error("Error fetching patients:", error); // Improved error logging
-      return res.status(500).send({ error: "Failed to fetch patients" }); // Added `return`
+      console.error("Error fetching patients:", error);
+      return res.status(500).json({ error: "Failed to fetch patients" });
     }
-    res.setHeader("Access-Control-Allow-Origin", "*"); // Or your specific domain
+
+    // Set CORS headers (if not already handled globally in `index.js`)
+    res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    res.setHeader(
-      "Access-Control-Allow-Headers",
-      "Content-Type, Authorization"
-    );
-    res.status(200).send(data);
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+    return res.status(200).json(data);
   } catch (error) {
-    console.error("Unexpected error:", error); // Improved error logging
-    res.status(500).send({ error: "Unexpected server error" }); // Changed status to 500 for server errors
+    console.error("Unexpected error:", error);
+    return res.status(500).json({ error: "Unexpected server error" });
   }
 });
 
