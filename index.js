@@ -14,7 +14,8 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const app = express();
 app.use(express.json());
-app.use(cors({origin : ""}));
+app.use(cors({ origin: "" }));
+app.options("*", cors());
 app.use(cors({ origin: "https://radiology-website-zeta.vercel.app" }));
 app.use("/", upload_bucket);
 app.use("/", populateHandler);
@@ -22,7 +23,6 @@ app.use("/", getReport);
 app.use("/", getPatientInfo);
 app.use("/", editPatientInfo);
 app.use("/", fetchAllPatients);
-
 
 export default app;
 export { supabase };
