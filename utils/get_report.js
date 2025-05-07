@@ -12,9 +12,18 @@ router.get("/get_report/:scanNumber", async (req, res) => {
       .download(`${scanNumber}/report.pdf`);
 
     if (error) {
-      return res.status(404).send(error.message);
+      console.error("Supabase error:", error);
+      return res.status(404).json({ error: "Report not found" });
     }
 
+    if (!data) {
+      console.error("No data received from Supabase");
+      return res.status(404).json({ error: "No report data found" });
+    }
+
+    // Convert Blob to ArrayBuffer
+    const arrayBuffer = await data.arrayBuffer();
+    
     // Set appropriate headers for file download
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
@@ -22,10 +31,11 @@ router.get("/get_report/:scanNumber", async (req, res) => {
       `attachment; filename="${scanNumber}_report.pdf"`
     );
 
-    // Pipe the readable stream to the response
-    data.pipe(res);
+    // Send the ArrayBuffer
+    res.send(Buffer.from(arrayBuffer));
   } catch (err) {
-    return res.status(500).send(`Error retrieving report: ${err.message}`);
+    console.error("Error retrieving report:", err);
+    return res.status(500).json({ error: `Error retrieving report: ${err.message}` });
   }
 });
 
