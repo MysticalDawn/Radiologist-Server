@@ -73,10 +73,23 @@ router.get("/get_example/:exampleNumber", async (req, res) => {
 router.get("/get_report/:scanNumber", async (req, res) => {
   const { scanNumber } = req.params;
   const bucketName = "data";
+  
+  // Determine which path to use based on scan number
+  let reportPath;
+  if (scanNumber === "50") {
+    reportPath = "example_1/report.pdf";
+  } else if (scanNumber === "100") {
+    reportPath = "example_2/report.pdf";
+  } else if (scanNumber === "150") {
+    reportPath = "example_3/report.pdf";
+  } else {
+    reportPath = `${scanNumber}/report.pdf`;
+  }
+
   try {
     const { data, error } = await supabase.storage
       .from(bucketName)
-      .download(`${scanNumber}/report.pdf`);
+      .download(reportPath);
 
     if (error) {
       console.error("Supabase error:", error);
